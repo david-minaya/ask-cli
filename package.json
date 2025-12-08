@@ -1,0 +1,17 @@
+{
+  "name": "ask",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "David Minaya",
+  "type": "module",
+  "main": "app.js",
+  "bin": "app.js",
+  "scripts": {
+    "start": "node app.mjs"
+  },
+  "dependencies": {
+    "@langchain/google-genai": "^2.0.4",
+    "dotenv": "^17.2.3"
+  }
+}
