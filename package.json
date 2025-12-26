@@ -1,14 +1,20 @@
 {
   "name": "ask",
   "version": "1.0.0",
-  "description": "",
   "license": "ISC",
   "author": "David Minaya",
   "type": "module",
-  "main": "app.js",
-  "bin": "app.js",
+  "main": "./app.js",
+  "bin": {
+    "ask": "./app.js",
+    "how": "./app.js",
+    "what": "./app.js",
+    "que": "./app.js",
+    "como": "./app.js",
+    "cual": "./app.js"
+  },
   "scripts": {
-    "start": "node app.mjs"
+    "start": "node ./app.js"
   },
   "dependencies": {
     "@langchain/google-genai": "^2.0.4",
