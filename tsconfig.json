@@ -1,0 +1,10 @@
+{
+  "extends": "@tsconfig/node22/tsconfig.json",
+  "include": ["./src/**/*", "index.d.ts"],
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "outDir": "./dist",
+    "inlineSourceMap": true,
+    "rewriteRelativeImportExtensions": true
+  }
+}

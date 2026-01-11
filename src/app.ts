@@ -1,0 +1,51 @@
+#!/usr/bin/env node
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
+import { ask } from './commands/ask.tsx';
+import { selectModel } from './commands/selectModel.tsx';
+import { listHistory } from './commands/listHistory.ts';
+import { clearHistory } from './commands/clearHistory.ts';
+import { providers } from './commands/providers.tsx';
+import { logo } from './utils/logo.ts';
+
+void yargs(hideBin(process.argv))
+  .scriptName('ask')
+  .usage(`${logo}\nAI cli to ask short questions from the terminal\n\nUsage: $0 <prompt..>`)
+  .version('0.1.0')
+  .locale('en')
+  .example('$0 how to delete a file', '')
+  .help()
+  .command({
+    command: '$0 <prompt..>',
+    describe: 'Ask a question to the AI model',
+    builder: yargs => yargs
+      .positional('prompt', { type: 'string', array: true, demandOption: true })
+      .option('command', {
+        alias: ['c'],
+        type: 'string',
+        description: 'Command to execute',
+        requiresArg: true
+      }),
+    handler: (args) => ask(args.prompt.join(' '), args.command)
+  })
+  .command({
+    command: '/models',
+    describe: 'Select a model',
+    handler: () => selectModel()
+  })
+  .command({
+    command: '/providers',
+    describe: 'Setup providers',
+    handler: () => providers()
+  })
+  .command({
+    command: '/history',
+    describe: 'List the conversation history',
+    handler: () => listHistory()
+  })
+  .command({
+    command: '/clear',
+    describe: 'Clear the history',
+    handler: () => clearHistory()
+  })
+  .parse();

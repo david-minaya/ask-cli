@@ -1,0 +1,58 @@
+import { Config } from '../types/config.ts';
+import { store } from './store.ts';
+
+const path = './data/config.json';
+
+let config: Config;
+
+async function get() {
+
+  if (config) return config;
+
+  config = await store.get<Config>(path, { 
+    model: undefined,
+    providers: {
+      google_genai: {
+        apiKey: undefined
+      },
+      anthropic: {
+        apiKey: undefined
+      },
+      openai: {
+        apiKey: undefined
+      }
+    }
+  });
+
+  return config;
+}
+
+async function setModel(provider: string, model: string, apiKey: string) {
+
+  const config = await get();
+  
+  config.model = { 
+    provider: provider,
+    model: model, 
+    apiKey: apiKey
+  };
+  
+  await save(config);
+}
+
+async function setProviderApiKey(providerId: string, apiKey: string) {
+  const config = await get();
+  config.providers[providerId].apiKey = apiKey;
+  await save(config);
+}
+
+async function save(config: Config) {
+  await store.save(path, config);
+}
+
+export const configStore = {
+  get,
+  setModel,
+  setProviderApiKey,
+  save
+};
