@@ -7,7 +7,9 @@ A fast and lightweight AI-powered CLI tool to help you with commands, coding, ap
 - 🚀  Blazing fast speed, almost instant responses.
 - 🛡️  Safe by design, it cannot run commands or access your files without your explicit authorization.
 
-Forget about switching between applications to know how to use a command or fix an error. Just ask your terminal how to do it.
+> Forget about switching between applications to know how to use a command or fix an error. Just ask your terminal how to do it.
+
+![Ask CLI demo showing quick terminal responses](./images/ask.gif)
 
 ## Content
 
