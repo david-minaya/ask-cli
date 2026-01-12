@@ -1,13 +1,14 @@
 {
   "name": "ask-cli-ai",
   "description": "AI CLI to help you with commands, coding, apps, and more from your terminal.",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "homepage": "https://github.com/david-minaya/ask",
   "repository": "github:david-minaya/ask",
   "license": "ISC",
   "author": "David Minaya",
   "type": "module",
   "main": "./dist/app.js",
+  "keywords": ["cli", "ai", "terminal", "commands", "productivity", "help", "ask"],
   "bin": {
     "ask": "dist/app.js",
     "how": "dist/app.js",
