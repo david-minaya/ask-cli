@@ -1,5 +1,7 @@
 # Ask CLI
 
+![NPM Version](https://img.shields.io/npm/v/ask-cli-ai)
+
 A fast and lightweight AI-powered CLI tool to help you with commands, coding, apps and more.
 
 - 🤖  Get help about commands, coding, apps, etc.
@@ -7,7 +9,7 @@ A fast and lightweight AI-powered CLI tool to help you with commands, coding, ap
 - 🚀  Blazing fast speed, almost instant responses.
 - 🛡️  Safe by design, it cannot run commands or access your files without your explicit authorization.
 
-> Forget about switching between applications to know how to use a command or fix an error. Just ask your terminal how to do it.
+Forget about switching between applications to know how to use a command or fix an error. Just ask your terminal how to do it.
 
 ![Ask CLI demo showing quick terminal responses](https://github.com/david-minaya/ask/raw/main/images/ask.gif)
 
@@ -41,7 +43,7 @@ Why use Ask CLI and not an AI agent like Claude or Gemini?
 ## Installation
 
 ```bash
-npm install -g askcli
+npm install -g ask-cli-ai
 ```
 
 ## Usage
