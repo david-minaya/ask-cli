@@ -12,7 +12,7 @@ async function get() {
   config = await store.get<Config>(path, { 
     model: undefined,
     providers: {
-      google_genai: {
+      gemini: {
         apiKey: undefined
       },
       anthropic: {

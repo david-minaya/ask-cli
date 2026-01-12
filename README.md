@@ -9,7 +9,7 @@ A fast and lightweight AI-powered CLI tool to help you with commands, coding, ap
 
 > Forget about switching between applications to know how to use a command or fix an error. Just ask your terminal how to do it.
 
-![Ask CLI demo showing quick terminal responses](./images/ask.gif)
+![Ask CLI demo showing quick terminal responses](https://github.com/david-minaya/ask/raw/main/images/ask.gif)
 
 ## Content
 
@@ -94,7 +94,7 @@ ask what is wrong here -c "git status"
 
 You can select a model using the `ask /models` command. This will list all the available models and let you select the model you want to use. 
 
-![Model selection screen](./images/select-model.png)
+![Model selection screen](https://github.com/david-minaya/ask/blob/main/images/select-model.png)
 
 > If it's the first time you select a model, you will be prompted to set the API key for the model's provider.
 

@@ -79,6 +79,7 @@ function Ask(props: Props) {
   async function handleSend(modelId: string, apiKey: string) {
     setIsFirstRun(true);
     setView('ask');
+    const config = await configStore.get();
     await send(config.model!.provider, modelId, apiKey);
   }
   

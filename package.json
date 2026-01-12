@@ -1,5 +1,6 @@
 {
   "name": "askcli",
+  "description": "AI CLI to help you with commands, coding, apps, and more from your terminal.",
   "version": "1.0.0",
   "license": "ISC",
   "author": "David Minaya",
