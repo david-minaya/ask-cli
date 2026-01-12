@@ -36,12 +36,12 @@ export function Welcome(props: Props) {
           <Box flexDirection='column' key={item} marginBottom={1}>
             <Text>{logo}</Text>
             <Box flexDirection='column' marginTop={1}>
-              <Text>¡Welcome to ASK CLI, your handy assistant to help you from the terminal!</Text>
+              <Text>Welcome to ASK CLI, your handy assistant to help you from the terminal!</Text>
               <Box flexDirection='column' marginTop={1} paddingLeft={1}>
                 <Text>🤖  Get help about commands, coding, apps, etc.</Text>
                 <Text>📝  Short and precise answers, just the info you need, straight to the point.</Text>
-                <Text>🚀  Blasting fast speed, almost instant responses.</Text>
-                <Text>🔒  Secure first, the AI can{'\''}t run commands by default, you need to allow it.</Text>
+                <Text>🚀  Blazing fast speed, almost instant responses.</Text>
+                <Text>🛡️  Safe by design, it cannot run commands or access your files without your explicit authorization.</Text>
               </Box>
             </Box>
             <Box marginTop={1}>

@@ -10,14 +10,18 @@ import { logo } from './utils/logo.ts';
 
 void yargs(hideBin(process.argv))
   .scriptName('ask')
-  .usage(`${logo}\nAI cli to ask short questions from the terminal\n\nUsage: $0 <prompt..>`)
+  .usage(`${logo}\nAI CLI to help you with commands, coding, apps and more.\n\nUsage: $0 <prompt..>`)
   .version('0.1.0')
   .locale('en')
-  .example('$0 how to delete a file', '')
+  .example('$0 how to run a docker container', '')
+  .example('how to setup my git account', '')
+  .example('what is the chmod command', '')
+  .example('$0 what is using port 80 -c "netstat -ano"', '')
+  
   .help()
   .command({
     command: '$0 <prompt..>',
-    describe: 'Ask a question to the AI model',
+    describe: 'Ask something. Alias: what, how',
     builder: yargs => yargs
       .positional('prompt', { type: 'string', array: true, demandOption: true })
       .option('command', {
@@ -40,12 +44,12 @@ void yargs(hideBin(process.argv))
   })
   .command({
     command: '/history',
-    describe: 'List the conversation history',
+    describe: 'List the chat history',
     handler: () => listHistory()
   })
   .command({
     command: '/clear',
-    describe: 'Clear the history',
+    describe: 'Clear the chat history',
     handler: () => clearHistory()
   })
   .parse();
