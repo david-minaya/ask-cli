@@ -1,11 +1,11 @@
 import { dirname, join } from 'path';
 import { existsSync } from 'fs';
 import { readFile, mkdir, writeFile } from 'fs/promises';
-import { root } from '../utils/root.ts';
+import { dataDir } from '../utils/dataDir.ts';
 
 async function get<T>(path: string, defaultData: T) {
   try {
-    const filePath = join(root, path);
+    const filePath = join(dataDir, path);
     const content = await readFile(filePath, 'utf-8');
     return JSON.parse(content) as T;
   } catch {
@@ -14,7 +14,7 @@ async function get<T>(path: string, defaultData: T) {
 }
 
 async function save(path: string, data: unknown) {
-  const filePath = join(root, path);
+  const filePath = join(dataDir, path);
   if (!existsSync(dirname(filePath))) {
     await mkdir(dirname(filePath), { recursive: true });
   }

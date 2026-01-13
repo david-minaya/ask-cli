@@ -1,9 +1,12 @@
 {
   "name": "ask-cli-ai",
   "description": "AI CLI to help you with commands, coding, apps, and more from your terminal.",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "homepage": "https://github.com/david-minaya/ask",
-  "repository": "github:david-minaya/ask",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/david-minaya/ask.git"
+  },
   "engines": {
     "node": ">=20.19.0"
   },

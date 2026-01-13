@@ -1,7 +1,7 @@
 import { Message } from '../types/message.ts';
 import { store } from './store.ts';
 
-const path = `./data/chats/history.${process.ppid}.json`;
+const path = `chats/history.${process.ppid}.json`;
 
 let history: Message[];
 

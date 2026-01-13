@@ -1,7 +1,7 @@
 import { Config } from '../types/config.ts';
 import { store } from './store.ts';
 
-const path = './data/config.json';
+const path = 'config.json';
 
 let config: Config;
 
