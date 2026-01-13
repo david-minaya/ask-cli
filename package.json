@@ -1,14 +1,25 @@
 {
   "name": "ask-cli-ai",
   "description": "AI CLI to help you with commands, coding, apps, and more from your terminal.",
-  "version": "1.0.7",
+  "version": "1.0.9",
   "homepage": "https://github.com/david-minaya/ask",
   "repository": "github:david-minaya/ask",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "license": "ISC",
   "author": "David Minaya",
   "type": "module",
   "main": "./dist/app.js",
-  "keywords": ["cli", "ai", "terminal", "commands", "productivity", "help", "ask"],
+  "keywords": [
+    "cli",
+    "ai",
+    "terminal",
+    "commands",
+    "productivity",
+    "help",
+    "ask"
+  ],
   "bin": {
     "ask": "dist/app.js",
     "how": "dist/app.js",
@@ -33,7 +44,6 @@
     "ink": "^6.6.0",
     "ink-scroll-list": "^0.4.1",
     "ink-scroll-view": "^0.3.5",
-    "ink-select-input": "^6.2.0",
     "ink-spinner": "^5.0.0",
     "ink-text-input": "^6.0.0",
     "langchain": "^1.2.7",
@@ -43,7 +53,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@stylistic/eslint-plugin": "^5.6.1",
-    "@tsconfig/node22": "^22.0.5",
+    "@tsconfig/node20": "^20.1.8",
     "@types/node": "^25.0.3",
     "@types/react": "^19.2.7",
     "@types/yargs": "^17.0.35",

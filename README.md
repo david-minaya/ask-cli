@@ -1,6 +1,7 @@
 # Ask CLI
 
-[![NPM Version](https://img.shields.io/npm/v/ask-cli-ai)](https://www.npmjs.com/package/ask-cli-ai)
+[![NPM Version](https://img.shields.io/npm/v/ask-cli-ai)](https://www.npmjs.com/package/ask-cli-ai) ![Min Node Version](https://img.shields.io/node/v/ask-cli-ai)
+
 
 A fast and lightweight AI-powered CLI tool to help you with commands, coding, apps and more.
 
