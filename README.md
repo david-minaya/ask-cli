@@ -131,7 +131,7 @@ You can select a model using the `ask /models` command. This will list all the a
 ```
 AI CLI to help you with commands, coding, apps and more.
 
-Version: 1.0.11
+Version: 1.0.12
 
 Usage: ask <prompt..>
 
