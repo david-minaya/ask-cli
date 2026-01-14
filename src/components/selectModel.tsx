@@ -6,7 +6,7 @@ import { providers } from '../providers.ts';
 import { Model } from '../types/model.ts';
 import { configStore } from '../stores/config.ts';
 import { Provider } from '../types/provider.ts';
-import { ApiKey } from './apiKey.tsx';
+import { ApiKeyField } from './apiKeyField.tsx';
 
 type ProviderItem = { type: 'provider'; key: Key; provider: string };
 type ModelItem = { type: 'model'; key: Key; model: Model };
@@ -134,7 +134,7 @@ export function SelectModel(props: Props) {
 
   async function save(provider: Provider, model: Model, apikey: string) {
     await configStore.setProviderApiKey(provider.id, apikey);
-    await configStore.setModel(provider.id, model.name, apikey);
+    await configStore.setModel(provider.id, model.name);
     onSelect(model, apikey);
   }
 
@@ -181,8 +181,9 @@ export function SelectModel(props: Props) {
         </Box>
       }
       {view === 'set-api-key' &&
-        <ApiKey 
-          provider={provider!}
+        <ApiKeyField
+          title={`${provider?.name} Api Key`}
+          commands='Esc (Exit), Ctrl+V (Paste), Enter (Save)'
           onChange={handleApiKeyChange}/>
       }
     </Box>

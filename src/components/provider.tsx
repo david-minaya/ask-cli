@@ -1,79 +1,56 @@
-import { measureElement, useInput, Box, Text, DOMElement } from 'ink';
-import { useState, useRef, useMemo, useEffect } from 'react';
-import { providers as providerList } from '../providers.ts';
+import { useInput, Box, Text } from 'ink';
+import { useEffect, useState } from 'react';
 import { Provider } from '../types/provider.ts';
 import { configStore } from '../stores/config.ts';
-import TextInput from 'ink-text-input';
-
-const config = await configStore.get();
+import { ApiKeyField } from './apiKeyField.tsx';
 
 interface Props {
   provider: Provider;
   onClose: () => void;
 }
 
+const config = await configStore.get();
+
 export function Provider(props: Props) {
 
   const { provider, onClose } = props;
-
-  const [enableEdit, setEnableEdit] = useState(false);
-  const [apiKey, setApiKey] = useState(config.providers[provider.id]?.apiKey ?? '');
-  const [apiKeyInput, setApiKeyInput] = useState(apiKey);
-  const [contentHeight, setContentHeight] = useState<number>();
-
-  const contentRef = useRef<DOMElement>(null);
-
-  const height = useMemo(() => process.stdout.rows - 2, []);
+  
+  const [apiKey, setApiKey] = useState(config?.providers[provider.id]?.apiKey);
+  const [exit, setExit] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    const contentSize = measureElement(contentRef.current!);
-    const contentHeight = height - contentSize.height;
-    setContentHeight(providerList.length > contentHeight ? contentHeight : undefined);
-  }, [height]);
+    if (exit) {
+      setTimeout(() => process.exit(), 0);
+    }
+  }, [exit]);
 
   useInput((input, key) => {
-    if (key.escape) onClose();
-    if (input === 'e') setEnableEdit(true);
+    if (key.escape) setExit(true);
+    if (input.toLowerCase() === 'q') onClose();
   });
 
-  async function handleSave() {
-    await configStore.setProviderApiKey(provider.id, apiKeyInput);
-    setApiKey(apiKeyInput);
-    setEnableEdit(false);
+  async function handleSave(apiKey: string) {
+    await configStore.setProviderApiKey(provider.id, apiKey);
+    setApiKey(apiKey);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 1000);
   }
+
+  if (exit) return null;
 
   return (
     <Box flexDirection='column'>
-      <Box flexDirection='column' ref={contentRef}>
-        <Text bold>{provider.name}</Text>
-        <Box 
-          height={contentHeight}
-          marginTop={1}>
-          <Text><Text color='gray' bold>Api key:</Text> {apiKey || 'none'}</Text>
-        </Box>
-        {enableEdit &&
-          <Box
-            marginTop={1}
-            borderStyle='single' 
-            borderLeftColor='cyan'
-            borderLeft={true} 
-            borderRight={false} 
-            borderTop={false} 
-            borderBottom={false}
-            paddingLeft={1}>
-            <Text color='gray'>Key: </Text>
-            <TextInput 
-              value={apiKeyInput}
-              onChange={setApiKeyInput}
-              onSubmit={handleSave}
-              placeholder="Enter api key, paste (Ctrl + V)"
-            />
-          </Box>
-        }
+      <ApiKeyField
+        title={provider.name}
+        apiKey={apiKey}
+        commands='Esc (Exit), Q (Go Back), Ctrl+V (Paste), Enter (Save)'
+        onChange={handleSave}/>
+      {saved &&
         <Box marginTop={1}>
-          <Text color='gray'>{'Esc (Back)  E (Edit api key)'}</Text>
+          <Text color='cyan' bold>Saved!</Text>
         </Box>
-      </Box>
+      }
     </Box>
   );
 }

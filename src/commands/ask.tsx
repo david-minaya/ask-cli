@@ -3,6 +3,7 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import { exec as execCb } from 'node:child_process';
 import findProcess from 'find-process';
+import chalk from 'chalk';
 import { useEffect, useState } from 'react';
 import { Box, render, Static, Text, useApp } from 'ink';
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
@@ -15,6 +16,7 @@ import { ChatAnthropic } from '@langchain/anthropic';
 import { ChatOpenAI } from '@langchain/openai';
 import { instructions } from '../templates/instructions.ts';
 import { providers } from '../providers.ts';
+import { Config } from '../types/config.ts';
 
 const exec = util.promisify(execCb);
 
@@ -44,8 +46,11 @@ function Ask(props: Props) {
 
   useEffect(() => {
     void (async () => {
-      if (!config.model) return setView('welcome');
-      await send(config.model.provider, config.model.model, config.model.apiKey);
+      if (config.model) {
+        await send(config);
+      } else {
+        setView('welcome');
+      }
     })();
   }, []);
 
@@ -76,22 +81,35 @@ function Ask(props: Props) {
     })().catch(() => {});
   }, []);
 
-  async function handleSend(modelId: string, apiKey: string) {
+  async function handleSend() {
     setIsFirstRun(true);
     setView('ask');
     const config = await configStore.get();
-    await send(config.model!.provider, modelId, apiKey);
+    await send(config);
   }
   
-  async function send(providerId: string, modelId: string, apiKey: string) {
+  async function send(config: Config) {
+    
+    const modelId = config.model!.model;
+    const providerId = config.model!.provider;
+    const apikey = config.providers[providerId].apiKey!;
+    const provider = providers.find(provider => provider.id === providerId);
+    const model = provider?.models.find(model => model.name === modelId);
+    
+    if (!apikey) {
+      console.error(`No API key found for the model ${chalk.bold(`${model!.title} (${provider!.name})`)}.\n`);
+      console.error(`Use the command ${chalk.cyan(chalk.bold('ask /providers'))} to set the API key for the provider ${chalk.bold(provider!.name)}.`);
+      setExitCode(1);
+      return;
+    }
     
     try {
       
       setSending(true);
-
+      
       const prompt = await getPrompt();
       
-      const model = getModel(providerId, modelId, apiKey);
+      const model = getModel(providerId, modelId, apikey);
       
       const response = await model.invoke([
         { role: 'system', content: instructions },
@@ -110,8 +128,9 @@ function Ask(props: Props) {
       
     } catch (err) {
 
-      console.error('Error running model:', (err as Error).message);
+      console.error(`Error running model ${chalk.bold(`${model!.title} (${provider!.name})`)}:\n\n${(err as Error).message}`);
 
+      setSending(false);
       setExitCode(1);
     }
   }

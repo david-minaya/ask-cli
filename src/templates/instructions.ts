@@ -29,6 +29,8 @@ Ask Cli help:
 
   AI CLI to help you with commands, coding, apps and more.
 
+  Version: 1.0.11
+
   Usage: ask <prompt..>
 
   Commands:

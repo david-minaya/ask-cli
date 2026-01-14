@@ -7,6 +7,5 @@ export interface Config {
   model?: {
     provider: string;
     model: string;
-    apiKey: string;
   };
 }

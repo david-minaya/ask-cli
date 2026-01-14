@@ -27,16 +27,9 @@ async function get() {
   return config;
 }
 
-async function setModel(provider: string, model: string, apiKey: string) {
-
+async function setModel(provider: string, model: string) {
   const config = await get();
-  
-  config.model = { 
-    provider: provider,
-    model: model, 
-    apiKey: apiKey
-  };
-  
+  config.model = { provider, model };
   await save(config);
 }
 
