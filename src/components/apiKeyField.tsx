@@ -1,11 +1,9 @@
 import { Box, Text } from 'ink';
-import { useEffect, useState } from 'react';
 import { TextField } from './textField.tsx';
 
 interface Props {
   title: string;
-  commands: string;
-  apiKey?: string;
+  value: string;
   onChange: (apiKey: string) => void;
 }
 
@@ -13,29 +11,33 @@ export function ApiKeyField(props: Props) {
 
   const { 
     title,
-    apiKey: initialApiKey = '', 
-    commands, 
+    value,
     onChange 
   } = props;
-
-  const [apiKey, setApiKey] = useState(initialApiKey);
-
-  useEffect(() => {
-    setApiKey(initialApiKey);
-  }, [initialApiKey]);
 
   return (
     <Box flexDirection='column'>
       <Text bold>{title}</Text>
-      <TextField
-        label='Api key:'
-        value={apiKey}
-        placeholder='Enter api key'
-        marginTop={1} 
-        onChange={setApiKey}
-        onSubmit={value => onChange(value.trim())}/>
-      <Box marginTop={1}>
-        <Text color='grey' dimColor>{commands}</Text>
+      <Box flexShrink={0}>
+      </Box>
+      <Box 
+        flexDirection='row'
+        gap={1}
+        borderStyle='single' 
+        borderLeftColor='cyan'
+        borderLeft={true} 
+        borderRight={false} 
+        borderTop={false} 
+        borderBottom={false}
+        paddingLeft={1}
+        marginTop={1}>
+        <Box flexShrink={0}>
+          <Text>Api key:</Text>
+        </Box>
+        <TextField
+          value={value}
+          placeholder='Enter api key'
+          onChange={onChange}/>
       </Box>
     </Box>
   );

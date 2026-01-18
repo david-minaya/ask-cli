@@ -1,51 +1,39 @@
 import { Config } from '../types/config.ts';
-import { store } from './store.ts';
+import { defaultConfig } from '../utils/defaultConfig.ts';
+import { configPath } from '../utils/paths.ts';
+import { Store } from './store.ts';
 
-const path = 'config.json';
+class ConfigStore {
 
-let config: Config;
+  private store: Store;
+  private config?: Config;
 
-async function get() {
+  constructor() {
+    this.store = new Store(configPath);
+  }
 
-  if (config) return config;
+  async get() {
+    if (this.config) return this.config;
+    this.config = await this.store.get<Config>(defaultConfig);
+    return this.config;
+  }
 
-  config = await store.get<Config>(path, { 
-    model: undefined,
-    providers: {
-      gemini: {
-        apiKey: undefined
-      },
-      anthropic: {
-        apiKey: undefined
-      },
-      openai: {
-        apiKey: undefined
-      }
-    }
-  });
+  async setModel(provider: string, model: string) {
+    const config = await this.get();
+    config.model = { provider, model };
+    await this.save(config);
+  }
 
-  return config;
+  async setProviderApiKey(providerId: string, apiKey: string) {
+    const config = await this.get();
+    config.providers[providerId].apiKey = apiKey;
+    await this.save(config);
+  }
+
+  async save(config: Config) {
+    this.config = config;
+    await this.store.save(config);
+  }
 }
 
-async function setModel(provider: string, model: string) {
-  const config = await get();
-  config.model = { provider, model };
-  await save(config);
-}
-
-async function setProviderApiKey(providerId: string, apiKey: string) {
-  const config = await get();
-  config.providers[providerId].apiKey = apiKey;
-  await save(config);
-}
-
-async function save(config: Config) {
-  await store.save(path, config);
-}
-
-export const configStore = {
-  get,
-  setModel,
-  setProviderApiKey,
-  save
-};
+export const configStore = new ConfigStore();

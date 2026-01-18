@@ -1,4 +1,4 @@
-import { measureElement, useInput, Box, Text, DOMElement } from 'ink';
+import { measureElement, Box, Text, DOMElement } from 'ink';
 import { useState, useRef, useMemo, useEffect, Key } from 'react';
 import { ScrollViewRef, ScrollView } from 'ink-scroll-view';
 import { Fragment } from 'react/jsx-runtime';
@@ -7,6 +7,8 @@ import { Model } from '../types/model.ts';
 import { configStore } from '../stores/config.ts';
 import { Provider } from '../types/provider.ts';
 import { ApiKeyField } from './apiKeyField.tsx';
+import { Commands } from './commands.tsx';
+import { Command } from './command.tsx';
 
 type ProviderItem = { type: 'provider'; key: Key; provider: string };
 type ModelItem = { type: 'model'; key: Key; model: Model };
@@ -28,6 +30,7 @@ export function SelectModel(props: Props) {
   const [scrollViewHeight, setScrollViewHeight] = useState(0);
   const [model, setModel] = useState<Model>();
   const [provider, setProvider] = useState<Provider>();
+  const [apiKey, setApiKey] = useState('');
   const [startPosition, setStartPosition] = useState(0);
   const [endPosition, setEndPosition] = useState(0);
   const scrollRef = useRef<ScrollViewRef>(null);
@@ -69,50 +72,48 @@ export function SelectModel(props: Props) {
     setCurrentPosition(items.findIndex(item => item.type === 'model'));
   }, [items]);
 
-  useInput((_, key) => {
+  function handleExit() {
+    process.exit(0);
+  }
 
-    if (key.upArrow) {
-      
-      const previousModelItemIndex = items.findLastIndex((item, index) => item.type === 'model' && index < currentPosition);
-      const position = previousModelItemIndex === -1 ? currentPosition : previousModelItemIndex;
-      
-      setCurrentPosition(position);
+  function handleUp() {
 
-      if (position < startPosition) {
-        scrollRef.current?.scrollBy(position - startPosition);
-        setStartPosition(position);
-        setEndPosition(position + (scrollViewHeight - 1));
-        return;
-      }
-
-      if (items.findIndex(item => item.type === 'model') === position) {
-        scrollRef.current?.scrollToTop();
-        setStartPosition(0);
-        setEndPosition(scrollViewHeight - 1);
-      }
-    }
+    const previousModelItemIndex = items.findLastIndex((item, index) => item.type === 'model' && index < currentPosition);
+    const position = previousModelItemIndex === -1 ? currentPosition : previousModelItemIndex;
     
-    if (key.downArrow) {
+    setCurrentPosition(position);
 
-      const nextModelItemIndex = items.findIndex((item, index)=> item.type === 'model' && index > currentPosition);
-      const position = nextModelItemIndex === -1 ? currentPosition : nextModelItemIndex;
-      
-      setCurrentPosition(position);
-      
-      if (position > endPosition && position < items.length - 1) {
-        scrollRef.current?.scrollBy(position - endPosition);
-        setStartPosition(position - (scrollViewHeight - 1));
-        setEndPosition(position);
-      }
+    if (position < startPosition) {
+      scrollRef.current?.scrollBy(position - startPosition);
+      setStartPosition(position);
+      setEndPosition(position + (scrollViewHeight - 1));
+      return;
     }
+
+    if (items.findIndex(item => item.type === 'model') === position) {
+      scrollRef.current?.scrollToTop();
+      setStartPosition(0);
+      setEndPosition(scrollViewHeight - 1);
+    }
+  }
+
+  function handleDown() {
+
+    const nextModelItemIndex = items.findIndex((item, index)=> item.type === 'model' && index > currentPosition);
+    const position = nextModelItemIndex === -1 ? currentPosition : nextModelItemIndex;
     
-    if (key.return) {
-      void handleSelectModel((items[currentPosition] as ModelItem).model);
+    setCurrentPosition(position);
+    
+    if (position > endPosition && position < items.length - 1) {
+      scrollRef.current?.scrollBy(position - endPosition);
+      setStartPosition(position - (scrollViewHeight - 1));
+      setEndPosition(position);
     }
-  });
+  }
 
-  async function handleSelectModel(model: Model) {
+  async function handleSelectModel() {
   
+    const model = (items[currentPosition] as ModelItem).model;
     const provider = providers.find(provider => provider.models.some(item => item.name === model.name));
     const config = await configStore.get();
     const apikey = config.providers[provider!.id].apiKey;
@@ -128,7 +129,7 @@ export function SelectModel(props: Props) {
     void save(provider!, model, apikey);
   }
 
-  function handleApiKeyChange(apiKey: string) {
+  function handleSaveApiKey() {
     void save(provider!, model!, apiKey);
   }
 
@@ -175,16 +176,26 @@ export function SelectModel(props: Props) {
               )}
             </ScrollView>
           </Box>
-          <Box marginTop={1}>
-            <Text color='gray'>{'Esc (Exit), Enter (Select)'}</Text>
-          </Box>
+          <Commands>
+            <Command title='Esc (Exit)' esc onPress={handleExit}/>
+            <Command title='Enter (Select)' enter onPress={handleSelectModel}/>
+            <Command up onPress={handleUp} />
+            <Command down onPress={handleDown} />
+          </Commands>
         </Box>
       }
       {view === 'set-api-key' &&
-        <ApiKeyField
-          title={`${provider?.name} Api Key`}
-          commands='Esc (Exit), Ctrl+V (Paste), Enter (Save)'
-          onChange={handleApiKeyChange}/>
+        <Box flexDirection='column'>
+          <ApiKeyField
+            title={`${provider?.name} Api Key`}
+            value={apiKey}
+            onChange={setApiKey}/>
+          <Commands>
+            <Command title='Esc (Exit)' esc onPress={handleExit}/>
+            <Command title='Ctrl+V (Paste)' ctrl inputKey='v'/>
+            <Command title='Enter (Save)' enter onPress={handleSaveApiKey}/>
+          </Commands>
+        </Box>
       }
     </Box>
   );

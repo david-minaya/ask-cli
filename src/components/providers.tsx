@@ -1,8 +1,10 @@
-import { measureElement, useInput, Box, Text, DOMElement } from 'ink';
+import { measureElement, Box, Text, DOMElement } from 'ink';
 import { ScrollList } from 'ink-scroll-list';
 import { useState, useRef, useMemo, useEffect } from 'react';
 import { providers as providerList } from '../providers.ts';
 import { Provider } from '../types/provider.ts';
+import { Commands } from './commands.tsx';
+import { Command } from './command.tsx';
 
 interface Props {
   onSelect: (provider: Provider) => void;
@@ -33,26 +35,22 @@ export function Providers(props: Props) {
     }
   }, [event]);
 
-  useInput((_, key) => {
+  function handleExit() {
+    setVisible(false);
+    setEvent('exit');
+  }
 
-    if (key.escape) {
-      setVisible(false);
-      setEvent('exit');
-    }
+  function handleUp() {
+    setCurrentIndex((index) => index - 1 >= 0 ? index - 1 : providerList.length - 1);
+  }
 
-    if (key.upArrow) {
-      setCurrentIndex((index) => index - 1 >= 0 ? index - 1 : providerList.length - 1);
-    } 
-    
-    if (key.downArrow) {
-      setCurrentIndex((index) => index + 1 < providerList.length ? index + 1 : 0);
-    }
+  function handleDown() {
+    setCurrentIndex((index) => index + 1 < providerList.length ? index + 1 : 0);
+  }
 
-    if (key.return) {
-      onSelect(providerList[currentIndex]);
-    }
-  });
-
+  function handleSelect() {
+    onSelect(providerList[currentIndex]);
+  }
   if (!visible) return null;
 
   return (
@@ -79,9 +77,12 @@ export function Providers(props: Props) {
             ))}
           </ScrollList>
         </Box>
-        <Box marginTop={1}>
-          <Text color='gray'>{'Esc (Exit), Enter (Select)'}</Text>
-        </Box>
+        <Commands>
+          <Command title='Esc (Exit)' esc onPress={handleExit}/>
+          <Command title='Enter (Select)' enter onPress={handleSelect}/>
+          <Command up onPress={handleUp} />
+          <Command down onPress={handleDown} />
+        </Commands>
       </Box>
     </Box>
   );

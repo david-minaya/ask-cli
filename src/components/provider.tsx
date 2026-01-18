@@ -1,8 +1,10 @@
-import { useInput, Box, Text } from 'ink';
+import { Box, Text } from 'ink';
 import { useEffect, useState } from 'react';
 import { Provider } from '../types/provider.ts';
 import { configStore } from '../stores/config.ts';
 import { ApiKeyField } from './apiKeyField.tsx';
+import { Commands } from './commands.tsx';
+import { Command } from './command.tsx';
 
 interface Props {
   provider: Provider;
@@ -15,9 +17,16 @@ export function Provider(props: Props) {
 
   const { provider, onClose } = props;
   
-  const [apiKey, setApiKey] = useState(config?.providers[provider.id]?.apiKey);
+  const [apiKey, setApiKey] = useState(config?.providers[provider.id]?.apiKey ?? '');
   const [exit, setExit] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    void (async () => {
+      const config = await configStore.get();
+      setApiKey(config?.providers[provider.id]?.apiKey ?? '');
+    })();
+  }, []);
 
   useEffect(() => {
     if (exit) {
@@ -25,16 +34,18 @@ export function Provider(props: Props) {
     }
   }, [exit]);
 
-  useInput((input, key) => {
-    if (key.escape) setExit(true);
-    if (input.toLowerCase() === 'q') onClose();
-  });
-
-  async function handleSave(apiKey: string) {
+  async function handleSave() {
     await configStore.setProviderApiKey(provider.id, apiKey);
-    setApiKey(apiKey);
     setSaved(true);
-    setTimeout(() => setSaved(false), 1000);
+    setTimeout(() => setSaved(false), 800);
+  }
+
+  function handleExit() {
+    setExit(true);
+  }
+
+  function handleGoBack() {
+    onClose();
   }
 
   if (exit) return null;
@@ -43,14 +54,21 @@ export function Provider(props: Props) {
     <Box flexDirection='column'>
       <ApiKeyField
         title={provider.name}
-        apiKey={apiKey}
-        commands='Esc (Exit), Q (Go Back), Ctrl+V (Paste), Enter (Save)'
-        onChange={handleSave}/>
-      {saved &&
-        <Box marginTop={1}>
-          <Text color='cyan' bold>Saved!</Text>
-        </Box>
-      }
+        value={apiKey}
+        onChange={setApiKey}/>
+      <Box flexDirection='row' gap={1}>
+        <Commands>
+          <Command title='Esc (Exit)' esc onPress={handleExit}/>
+          <Command title='Ctrl+B (Go Back)' ctrl inputKey='b' onPress={handleGoBack}/>
+          <Command title='Ctrl+V (Paste)' ctrl inputKey='v'/>
+          <Command title='Enter (Save)' enter onPress={handleSave}/>
+        </Commands>
+        {saved &&
+          <Box marginTop={1}>
+            <Text color='cyan' bold>¡Saved!</Text>
+          </Box>
+        }
+      </Box>
     </Box>
   );
 }

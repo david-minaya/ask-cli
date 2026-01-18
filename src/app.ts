@@ -7,17 +7,17 @@ import { listHistory } from './commands/listHistory.ts';
 import { clearHistory } from './commands/clearHistory.ts';
 import { providers } from './commands/providers.tsx';
 import { logo } from './utils/logo.ts';
+import { config } from './commands/config.tsx';
 
 void yargs(hideBin(process.argv))
   .scriptName('ask')
-  .usage(`${logo}\nAI CLI to help you with commands, coding, apps and more.\n\nVersion: 1.0.12\n\nUsage: $0 <prompt..>`)
-  .version('1.0.12')
+  .usage(`${logo}\nAI CLI to help you with commands, coding, apps and more.\n\nVersion: 1.1.0\n\nUsage: $0 <prompt..>`)
+  .version('1.1.0')
   .locale('en')
   .example('$0 how to run a docker container', '')
   .example('how to setup my git account', '')
   .example('what is the chmod command', '')
   .example('$0 what is using port 80 -c "netstat -ano"', '')
-  
   .help()
   .command({
     command: '$0 <prompt..>',
@@ -41,6 +41,11 @@ void yargs(hideBin(process.argv))
     command: '/providers',
     describe: 'Setup providers',
     handler: () => providers()
+  })
+  .command({
+    command: '/config',
+    describe: 'Configuration',
+    handler: () => config()
   })
   .command({
     command: '/history',

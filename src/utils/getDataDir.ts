@@ -1,7 +1,6 @@
 import { join } from 'node:path';
-import { root } from './root.ts';
 
-function getDataDir() {
+export function getDataDir(root: string) {
   if (process.platform === 'win32' && process.env.LOCALAPPDATA) {
     return join(process.env.LOCALAPPDATA, 'ask-cli-ai');
   } else if (process.platform === 'darwin' && process.env.HOME) {
@@ -12,5 +11,3 @@ function getDataDir() {
     return join(root, 'ask-cli-ai');
   }
 };
-
-export const dataDir = getDataDir();

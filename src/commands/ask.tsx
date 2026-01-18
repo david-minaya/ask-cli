@@ -1,9 +1,7 @@
 import util from 'node:util';
-import path from 'node:path';
-import fs from 'node:fs/promises';
-import { exec as execCb } from 'node:child_process';
 import findProcess from 'find-process';
 import chalk from 'chalk';
+import { exec as execCb } from 'node:child_process';
 import { useEffect, useState } from 'react';
 import { Box, render, Static, Text, useApp } from 'ink';
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
@@ -11,7 +9,6 @@ import { configStore } from '../stores/config.ts';
 import { historyStore } from '../stores/history.ts';
 import { Welcome } from '../components/welcome.tsx';
 import { Loading } from '../components/loading.tsx';
-import { root } from '../utils/root.ts';
 import { ChatAnthropic } from '@langchain/anthropic';
 import { ChatOpenAI } from '@langchain/openai';
 import { instructions } from '../templates/instructions.ts';
@@ -41,6 +38,7 @@ function Ask(props: Props) {
   const [view, setView] = useState<'ask' | 'welcome'>('ask');
   const [sending, setSending] = useState(false);
   const [response, setResponse] = useState('');
+  const [meta, setMeta] = useState<{ model: string; time: number; inputTokens: number; outputTokens: number }>();
   const [exitCode, setExitCode] = useState<number>();
   const [isFirstRun, setIsFirstRun] = useState(false);
 
@@ -61,24 +59,7 @@ function Ask(props: Props) {
   }, [exitCode]);
 
   useEffect(() => {
-    
-    (async () => {
-    
-      const dirPath = path.join(root, '/data/chats');
-      const fileNames = await fs.readdir(dirPath);
-    
-      const files = await Promise.all(fileNames.map(async name => {
-        const filePath = path.join(dirPath, name);
-        const stats = await fs.stat(filePath);
-        return { path: filePath, time: stats.ctimeMs };
-      }));
-
-      const sortedFiles = files
-        .sort((a, b) => b.time - a.time)
-        .slice(10);
-      
-      await Promise.all(sortedFiles.map(file => fs.unlink(file.path)));
-    })().catch(() => {});
+    void historyStore.deleteOldHistory();
   }, []);
 
   async function handleSend() {
@@ -109,13 +90,17 @@ function Ask(props: Props) {
       
       const prompt = await getPrompt();
       
-      const model = getModel(providerId, modelId, apikey);
+      const modelClient = getModel(providerId, modelId, apikey);
+
+      const startTime = Date.now();
       
-      const response = await model.invoke([
+      const response = await modelClient.invoke([
         { role: 'system', content: instructions },
         ...history.map(item => ({ ...item })),
         {  role: 'human',  content: prompt }
       ]);
+
+      const endTime = Date.now();
 
       await historyStore.add([
         { role: 'human', content: prompt },
@@ -123,6 +108,14 @@ function Ask(props: Props) {
       ]);
       
       setResponse(response.text.replaceAll('\\x1b', '\x1b').replaceAll('\\n', '\n').concat('\x1b[0m'));
+      
+      setMeta({ 
+        model: model!.title, 
+        time: endTime - startTime,
+        inputTokens: response.usage_metadata?.input_tokens || 0, 
+        outputTokens: response.usage_metadata?.output_tokens || 0 
+      });
+      
       setSending(false);
       setExitCode(0);
       
@@ -151,11 +144,12 @@ function Ask(props: Props) {
     
     const provider = providers.find(provider => provider.id === providerId);
     const model = provider?.models.find(model => model.name === modelId);
+    const maxOutputTokens = config.settings.maxOutputTokens.value as number;
 
     switch (providerId) {
-      case 'openai': return new ChatOpenAI({ model: modelId, apiKey, ...model?.config });
-      case 'gemini': return new ChatGoogleGenerativeAI({ model: modelId, apiKey, ...model?.config });
-      case 'anthropic': return new ChatAnthropic({ model: modelId, apiKey, ...model?.config });
+      case 'openai': return new ChatOpenAI({ model: modelId, apiKey, ...model?.config, maxTokens: maxOutputTokens });
+      case 'gemini': return new ChatGoogleGenerativeAI({ model: modelId, apiKey, ...model?.config, maxOutputTokens });
+      case 'anthropic': return new ChatAnthropic({ model: modelId, apiKey, ...model?.config, maxTokens: maxOutputTokens });
       default: throw new Error('Model not found');
     }
   }
@@ -171,6 +165,12 @@ function Ask(props: Props) {
     }
   }
 
+  function formatTime(time: number) {
+    return time < 1000 * 60
+      ? `${(time / 1000).toFixed(1)}s`
+      : `${(time / (1000 * 60)).toFixed(1)}m`;
+  }
+  
   return (
     <Box>
       {view === 'welcome' && 
@@ -193,7 +193,16 @@ function Ask(props: Props) {
           {!sending && response &&
             <Static items={['']}>
               {item =>
-                <Text key={item}>{response}</Text>
+                <Box flexDirection='column' key={item}>
+                  <Text>{response}</Text>
+                  {config.settings.metadata.value &&meta &&
+                    <Box marginTop={1}>
+                      <Text color='gray' dimColor>
+                        Model: {meta.model}, Time: {formatTime(meta.time)}, Tokens: {meta.inputTokens + meta.outputTokens}
+                      </Text>
+                    </Box>
+                  }
+                </Box>
               }
             </Static>
           }

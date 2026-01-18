@@ -17,7 +17,6 @@ Forget about switching between applications to know how to use a command or fix 
 ## Content
 
 - [Why use Ask CLI?](#why-use-ask-cli)
-- [For whom is Ask CLI?](#for-whom-is-ask-cli)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Select model](#select-model)
@@ -31,15 +30,8 @@ Why use Ask CLI and not an AI agent like Claude or Gemini?
 - Ask CLI was created to do one thing and do it well: help you with commands, coding, apps and more from your terminal.
 - The AI models it uses are optimized to generate short, precise and fast answers.
 - No risk of prompt injection, Ask CLI cannot run commands or access your files by default.
-- No risk of running dangerous commands on your computer, you have to explicitly authorize it using the `--command` option. See [Running commands](#running-commands) for more details.
-
-## For whom is Ask CLI?
-
-- Students who want to learn how to use commands and the terminal.
-- Developers who want to be more productive and avoid context switching.
-- Sysadmins who need quick help with commands and troubleshooting.
-- DevOps engineers who want to automate tasks and get help with commands.
-- Anyone working in production environments where security is critical.
+- No risk of running dangerous commands on your computer. See [Running commands](#running-commands) for more details.
+- Designed for anyone who wants fast, secure, and precise help directly in the terminal.
 
 ## Installation
 
@@ -49,7 +41,7 @@ npm install -g ask-cli-ai
 
 ## Usage
 
-> To use Ask CLI, you first need to set up the API key. See the [Select model](#select-model) section to learn how.
+> To use Ask CLI, you first need to set up the API key. See [Select model](#select-model) to learn how.
 
 ### Ask questions
 
@@ -58,9 +50,9 @@ npm install -g ask-cli-ai
 ask <your question>
 
 # Examples
-ask how to find files by name in linux
-ask what is a promise in javascript
-ask how to create a new branch in git
+ask how to terminate a linux process
+ask what is a javascript promise
+ask how to create a git branch
 
 # Using quotes
 ask 'What does this command do: git config user.name "Ask CLI"?'
@@ -68,7 +60,7 @@ ask 'What does this command do: git config user.name "Ask CLI"?'
 
 ### Aliases
 
-You can use `how` and `what` as aliases for the `ask` command:
+You can use **`how`** and **`what`** as aliases for the **`ask`** command:
 
 ```bash
 # Using 'how' alias
@@ -80,7 +72,7 @@ what is the difference between git merge and rebase
 
 ### Running commands
 
-By default, Ask CLI cannot run commands on your computer. However, you can use the `-c` or `--command` option to execute a command and include its output in your question. This allows Ask CLI to analyze errors, logs, or any command output and provide context-aware answers.
+By default, Ask CLI cannot run commands on your computer. However, you can use the **`-c`** or **`--command`** option to execute a command and include its output in your question. This allows Ask CLI to analyze errors, logs, or any command output and provide context-aware answers.
 
 ```bash
 # Analyze an error
@@ -95,7 +87,7 @@ ask what is wrong here -c "git status"
 
 ## Select model
 
-You can select a model using the `ask /models` command. This will list all the available models and let you select the model you want to use. 
+You can select a model using the **`ask /models`** command. This will list all the available models and let you select the model you want to use. 
 
 ![Model selection screen](https://github.com/david-minaya/ask/blob/main/images/select-model.png)
 
@@ -131,7 +123,7 @@ You can select a model using the `ask /models` command. This will list all the a
 ```
 AI CLI to help you with commands, coding, apps and more.
 
-Version: 1.0.12
+Version: 1.1.0
 
 Usage: ask <prompt..>
 
@@ -139,6 +131,7 @@ Commands:
   ask <prompt..>     Ask something. Alias: what, how                   [default]
   ask /models        Select a model
   ask /providers     Setup providers
+  ask /config        Configuration
   ask /history       List the chat history
   ask /clear         Clear the chat history
 

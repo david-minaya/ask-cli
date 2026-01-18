@@ -1,27 +1,23 @@
-import { dirname, join } from 'path';
-import { existsSync } from 'fs';
-import { readFile, mkdir, writeFile } from 'fs/promises';
-import { dataDir } from '../utils/dataDir.ts';
+import { readFile, writeFile } from 'fs/promises';
 
-async function get<T>(path: string, defaultData: T) {
-  try {
-    const filePath = join(dataDir, path);
-    const content = await readFile(filePath, 'utf-8');
-    return JSON.parse(content) as T;
-  } catch {
-    return defaultData;
+export class Store {
+
+  private path: string;
+
+  constructor(path: string) {
+    this.path = path;
+  }
+
+  async get<T>(defaultData: T) {
+    try {
+      const content = await readFile(this.path, 'utf-8');
+      return JSON.parse(content) as T;
+    } catch {
+      return defaultData;
+    }
+  }
+  
+  async save(data: unknown) {
+    await writeFile(this.path, JSON.stringify(data));
   }
 }
-
-async function save(path: string, data: unknown) {
-  const filePath = join(dataDir, path);
-  if (!existsSync(dirname(filePath))) {
-    await mkdir(dirname(filePath), { recursive: true });
-  }
-  await writeFile(filePath, JSON.stringify(data));
-}
-
-export const store = {
-  get,
-  save
-};

@@ -29,7 +29,7 @@ Ask Cli help:
 
   AI CLI to help you with commands, coding, apps and more.
 
-  Version: 1.0.11
+  Version: 1.1.0
 
   Usage: ask <prompt..>
 
@@ -37,6 +37,7 @@ Ask Cli help:
     ask <prompt..>     Ask something. Alias: what, how                   [default]
     ask /models        Select a model
     ask /providers     Setup providers
+    ask /config        Configuration
     ask /history       List the chat history
     ask /clear         Clear the chat history
 

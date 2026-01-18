@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Static, Text, useInput } from 'ink';
+import { Box, Static, Text } from 'ink';
 import { SelectModel } from './selectModel.tsx';
 import { Model } from '../types/model.ts';
 import { logo } from '../utils/logo.ts';
@@ -13,12 +13,6 @@ export function Welcome(props: Props) {
   const { onSend } = props;
 
   const [closed, setClosed] = useState(false);
-
-  useInput((_, key) => {
-    if (key.escape) {
-      process.exit(0);
-    }
-  });
 
   function handleSend(model: Model, apiKey: string) {
     setClosed(true);

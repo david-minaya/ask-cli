@@ -1,12 +1,12 @@
-import { Box, Text } from 'ink';
+import { Text, TextProps } from 'ink';
 import TextInput from 'ink-text-input';
 import { useEffect, useState } from 'react';
 
 interface Props {
-  label?: string;
   value: string;
   placeholder?: string;
-  marginTop?: number;
+  color?: TextProps['color'];
+  inverse?: TextProps['inverse'];
   onChange: (value: string) => void;
   onSubmit?: (value: string) => void;
 }
@@ -14,15 +14,19 @@ interface Props {
 export function TextField(props: Props) {
 
   const { 
-    label,
     value: initialValue, 
-    placeholder = 'Enter text, paste (Ctrl+V)',
-    marginTop,
+    placeholder,
+    color,
+    inverse,
     onChange, 
     onSubmit 
   } = props;
 
   const [value, setValue] =  useState(initialValue);
+
+  useEffect(() => {
+    setValue(initialValue);
+  }, [initialValue]);
 
   useEffect(() => {
     onChange(value);
@@ -36,7 +40,7 @@ export function TextField(props: Props) {
     // to the existing one. To detect when the user is pasting, we check the length
     // of the input value. If the difference between the new value and the current
     // state is greater than 1, we assume the user is pasting.
-    if (input.length - value.length > 1) {
+    if (input.length - value.length > 1 && value.trim() === '') {
       setValue(value => value + input);
     } else {
       setValue(input);
@@ -44,27 +48,13 @@ export function TextField(props: Props) {
   }
 
   return (
-    <Box
-      flexDirection='row'
-      marginTop={marginTop}
-      borderStyle='single' 
-      borderLeftColor='cyan'
-      borderLeft={true} 
-      borderRight={false} 
-      borderTop={false} 
-      borderBottom={false}
-      paddingLeft={1}>
-      {label && 
-        <Box flexShrink={0}>
-          <Text>{label} </Text>
-        </Box>
-      }
+    <Text color={color} inverse={inverse}>
       <TextInput 
         value={value}
         onChange={handleChange}
         onSubmit={() => onSubmit?.(value)}
         placeholder={placeholder}
       />
-    </Box>
+    </Text>
   );
 }
