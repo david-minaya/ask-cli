@@ -39,7 +39,7 @@ export default defineConfig([
       '@stylistic/eol-last': ['warn', 'always'],
       '@stylistic/object-curly-spacing': ['warn', 'always'],
       '@stylistic/no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': ['warn', { args: 'after-used' }],
+      '@typescript-eslint/no-unused-vars': ['warn', { args: 'after-used', "destructuredArrayIgnorePattern": "^_" }],
       '@stylistic/member-delimiter-style': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
       'react/react-in-jsx-scope': 'off',

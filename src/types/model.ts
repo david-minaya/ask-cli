@@ -1,5 +1,5 @@
 export interface Model {
-  title: string;
+  id: string;
   name: string;
   config?: Record<string, unknown>;
 }

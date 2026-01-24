@@ -3,7 +3,7 @@ import findProcess from 'find-process';
 import chalk from 'chalk';
 import { exec as execCb } from 'node:child_process';
 import { useEffect, useState } from 'react';
-import { Box, render, Static, Text, useApp } from 'ink';
+import { Box, render, Static, Text } from 'ink';
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 import { configStore } from '../stores/config.ts';
 import { historyStore } from '../stores/history.ts';
@@ -12,8 +12,11 @@ import { Loading } from '../components/loading.tsx';
 import { ChatAnthropic } from '@langchain/anthropic';
 import { ChatOpenAI } from '@langchain/openai';
 import { instructions } from '../templates/instructions.ts';
-import { providers } from '../providers.ts';
 import { Config } from '../types/config.ts';
+import { Provider } from '../types/provider.ts';
+import { Model } from '../types/model.ts';
+import { useExit } from '../hooks/useExit.ts';
+import { SelectModel } from '../components/selectModel.tsx';
 
 const exec = util.promisify(execCb);
 
@@ -33,54 +36,55 @@ function Ask(props: Props) {
 
   const { prompt, command } = props;
 
-  const { exit } = useApp();
-
-  const [view, setView] = useState<'ask' | 'welcome'>('ask');
+  const [view, setView] = useState<'ask' | 'select-model' | 'welcome'>('ask');
   const [sending, setSending] = useState(false);
   const [response, setResponse] = useState('');
-  const [meta, setMeta] = useState<{ model: string; time: number; inputTokens: number; outputTokens: number }>();
-  const [exitCode, setExitCode] = useState<number>();
+  const [meta, setMeta] = useState<{ model: string; time: number; tokens: number }>();
+  const [_, setExit] = useExit();
   const [isFirstRun, setIsFirstRun] = useState(false);
 
   useEffect(() => {
     void (async () => {
-      if (config.model) {
-        await send(config);
-      } else {
+      if (config.isFirstExecution) {
         setView('welcome');
+        setIsFirstRun(true);
+      } else if (!config.model) {
+        setView('select-model');
+      } else {
+        await send(config);
       }
     })();
   }, []);
-
-  useEffect(() => {
-    if (exitCode !== undefined) {
-      setTimeout(() => exit(), 0);
-    }
-  }, [exitCode]);
 
   useEffect(() => {
     void historyStore.deleteOldHistory();
   }, []);
 
   async function handleSend() {
-    setIsFirstRun(true);
     setView('ask');
     const config = await configStore.get();
+    config.isFirstExecution = false;
+    await configStore.save(config);
     await send(config);
   }
   
   async function send(config: Config) {
     
-    const modelId = config.model!.model;
-    const providerId = config.model!.provider;
-    const apikey = config.providers[providerId].apiKey!;
-    const provider = providers.find(provider => provider.id === providerId);
-    const model = provider?.models.find(model => model.name === modelId);
+    const modelId = config.model!.id;
+    const providerId = config.model!.providerId;
+    const provider = config.providers[providerId];
+    const model = provider?.models.find(model => model.id === modelId);
+
+    if (!model) {
+      console.error(`Error: model ${chalk.bold(modelId)} not found`);
+      setExit(true);
+      return;
+    }
     
-    if (!apikey) {
-      console.error(`No API key found for the model ${chalk.bold(`${model!.title} (${provider!.name})`)}.\n`);
-      console.error(`Use the command ${chalk.cyan(chalk.bold('ask /providers'))} to set the API key for the provider ${chalk.bold(provider!.name)}.`);
-      setExitCode(1);
+    if (provider.type !== 'openai-compatible' && !provider.key) {
+      console.error(`No API key found for the model ${chalk.bold(`(${provider.name}) ${model.name}`)}.\n`);
+      console.error(`Use the command ${chalk.cyan(chalk.bold('ask /providers'))} to set the API key for the provider ${chalk.bold(provider.name)}.`);
+      setExit(true);
       return;
     }
     
@@ -90,7 +94,7 @@ function Ask(props: Props) {
       
       const prompt = await getPrompt();
       
-      const modelClient = getModel(providerId, modelId, apikey);
+      const modelClient = getModel(provider, model);
 
       const startTime = Date.now();
       
@@ -110,21 +114,20 @@ function Ask(props: Props) {
       setResponse(response.text.replaceAll('\\x1b', '\x1b').replaceAll('\\n', '\n').concat('\x1b[0m'));
       
       setMeta({ 
-        model: model!.title, 
+        model: model.name,
         time: endTime - startTime,
-        inputTokens: response.usage_metadata?.input_tokens || 0, 
-        outputTokens: response.usage_metadata?.output_tokens || 0 
+        tokens: (response.usage_metadata?.input_tokens || 0) + (response.usage_metadata?.output_tokens || 0)
       });
       
       setSending(false);
-      setExitCode(0);
+      setExit(true);
       
     } catch (err) {
 
-      console.error(`Error running model ${chalk.bold(`${model!.title} (${provider!.name})`)}:\n\n${(err as Error).message}`);
+      console.error(`Error running model ${chalk.bold(`(${provider.name}) ${model.name}`)}:\n\n${(err as Error).message}`);
 
       setSending(false);
-      setExitCode(1);
+      setExit(true);
     }
   }
 
@@ -140,17 +143,41 @@ function Ask(props: Props) {
     return result;
   }
 
-  function getModel(providerId: string, modelId: string, apiKey: string) {
+  function getModel(provider: Provider, model: Model) {
     
-    const provider = providers.find(provider => provider.id === providerId);
-    const model = provider?.models.find(model => model.name === modelId);
     const maxOutputTokens = config.settings.maxOutputTokens.value as number;
 
-    switch (providerId) {
-      case 'openai': return new ChatOpenAI({ model: modelId, apiKey, ...model?.config, maxTokens: maxOutputTokens });
-      case 'gemini': return new ChatGoogleGenerativeAI({ model: modelId, apiKey, ...model?.config, maxOutputTokens });
-      case 'anthropic': return new ChatAnthropic({ model: modelId, apiKey, ...model?.config, maxTokens: maxOutputTokens });
-      default: throw new Error('Model not found');
+    switch (provider.type) {
+      case 'openai': 
+        return new ChatOpenAI({ 
+          model: model.id, 
+          apiKey: provider.key, 
+          maxTokens: maxOutputTokens, 
+          ...model?.config
+        });
+      case 'gemini': 
+        return new ChatGoogleGenerativeAI({ 
+          model: model.id, 
+          apiKey: provider.key, 
+          maxOutputTokens,
+          ...model?.config
+        });
+      case 'anthropic': 
+        return new ChatAnthropic({ 
+          model: model.id, 
+          apiKey: provider.key, 
+          maxTokens: maxOutputTokens,
+          ...model?.config
+        });
+      case 'openai-compatible': 
+        return new ChatOpenAI({ 
+          model: model.id, 
+          apiKey: provider.key, 
+          configuration: { baseURL: provider.url },
+          maxTokens: maxOutputTokens
+        });
+      default: 
+        throw new Error('Model not found');
     }
   }
 
@@ -161,7 +188,7 @@ function Ask(props: Props) {
       return result.stdout;
     } catch (err) {
       const { stdout, stderr } = err as { stdout: string; stderr: string };
-      return `Error executing command: \n\n${stdout}\n\n${stderr}`;
+      return `Error executing command:\n\n${stdout}\n\n${stderr}`;
     }
   }
 
@@ -175,6 +202,9 @@ function Ask(props: Props) {
     <Box>
       {view === 'welcome' && 
         <Welcome onSend={handleSend}/>
+      }
+      {view === 'select-model' &&
+        <SelectModel onSelect={handleSend}/>
       }
       {view === 'ask' &&
         <Box>
@@ -195,10 +225,10 @@ function Ask(props: Props) {
               {item =>
                 <Box flexDirection='column' key={item}>
                   <Text>{response}</Text>
-                  {config.settings.metadata.value &&meta &&
+                  {config.settings.metadata.value && meta &&
                     <Box marginTop={1}>
                       <Text color='gray' dimColor>
-                        Model: {meta.model}, Time: {formatTime(meta.time)}, Tokens: {meta.inputTokens + meta.outputTokens}
+                        Model: {meta.model}, Time: {formatTime(meta.time)}, Tokens: {meta.tokens}
                       </Text>
                     </Box>
                   }

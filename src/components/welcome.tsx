@@ -1,26 +1,17 @@
-import { useState } from 'react';
 import { Box, Static, Text } from 'ink';
 import { SelectModel } from './selectModel.tsx';
-import { Model } from '../types/model.ts';
 import { logo } from '../utils/logo.ts';
 
 interface Props {
-  onSend: (model: string, apiKey: string) => void;
+  onSend: () => void;
 }
 
 export function Welcome(props: Props) {
 
   const { onSend } = props;
 
-  const [closed, setClosed] = useState(false);
-
-  function handleSend(model: Model, apiKey: string) {
-    setClosed(true);
-    onSend(model.name, apiKey);
-  }
-
-  if (closed) {
-    return null;
+  function handleSend() {
+    onSend();
   }
 
   return (

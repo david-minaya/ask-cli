@@ -23,7 +23,7 @@ export function Commands(props: Props) {
   return (
     <CommandContext.Provider value={inputEvent}>
       <Box marginTop={1} gap={1}>
-        {children.filter(child => child.props.title).map((child, index, children) => 
+        {children.filter(child => child.props.title && !child.props.hidden).map((child, index, children) => 
           <Box key={index}>
             {child}
             {index !== children.length - 1 &&
@@ -31,7 +31,7 @@ export function Commands(props: Props) {
             }
           </Box>
         )}
-        {children.filter(child => !child.props.title).map((child) => 
+        {children.filter(child => !child.props.title || child.props.hidden).map((child) => 
           child
         )}
       </Box>

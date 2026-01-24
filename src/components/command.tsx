@@ -4,12 +4,15 @@ import { CommandContext } from './commands.tsx';
 
 export interface CommandProps {
   title?: string;
+  hidden?: boolean;
+  tab?: true;
   ctrl?: true;
   esc?: true;
   enter?: true;
   up?: true;
   down?: true;
   inputKey?: string;
+  anyKey?: true;
   onPress?: () => void;
 }
 
@@ -17,12 +20,15 @@ export function Command(props: CommandProps) {
 
   const {
     title,
+    hidden,
+    tab,
     ctrl,
     esc,
     enter,
     up,
     down,
     inputKey,
+    anyKey,
     onPress
   } = props;
 
@@ -32,9 +38,10 @@ export function Command(props: CommandProps) {
 
   useEffect(() => {
 
-    if (!inputEvent) return;
+    if (!inputEvent || hidden) return;
 
     const keyMap: Partial<Key> = {
+      tab,
       ctrl,
       escape: esc,
       return: enter,
@@ -49,8 +56,11 @@ export function Command(props: CommandProps) {
 
     const validateKey = keys.length > 0;
     const validateInput = inputKey !== undefined;
-    const isKeyActive = keys.every(key => inputEvent.key[key]);
     const isInputActive = inputEvent.input === inputKey;
+    
+    const isKeyActive = anyKey
+      ? keys.some(key => inputEvent.key[key])
+      : keys.every(key => inputEvent.key[key]);
 
     const active = isActive(validateKey, validateInput, isKeyActive, isInputActive);
 
@@ -75,13 +85,11 @@ export function Command(props: CommandProps) {
     }
   }
 
-  if (!title) return null;
+  if (!title || hidden) return null;
 
   return (
     <Box>
-      <Text 
-        bold={active}
-        color={active ? 'cyan' : 'gray'}>
+      <Text color={active ? 'cyan' : 'gray'}>
         {title}
       </Text>
     </Box>

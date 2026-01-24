@@ -1,12 +1,13 @@
-import TextInput from 'ink-text-input';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Box, render, Text } from 'ink';
 import { ScrollView } from 'ink-scroll-view';
 import { configStore } from '../stores/config.ts';
 import { NumberSetting } from '../types/setting.ts';
+import { TextInput } from '../components/textInput.tsx';
 import { Commands } from '../components/commands.tsx';
 import { Command } from '../components/command.tsx';
 import { Config as ConfigType } from '../types/config.ts';
+import { useExit } from '../hooks/useExit.ts';
 
 const height = process.stdout.rows - 4;
 const initialConfig = await configStore.get();
@@ -26,13 +27,7 @@ export function Config() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [settingItems, setSettingItems] = useState(initialSettings);
   const [saved, setSaved] = useState(false);
-  const [exit, setExit] = useState(false);
-
-  useEffect(() => {
-    if (exit) {
-      setTimeout(() => process.exit(), 0);
-    }
-  }, [exit]);
+  const [exit, setExit] = useExit();
 
   function handleUp() {
     unselect();
@@ -113,7 +108,7 @@ export function Config() {
 
   return (
     <Box flexDirection="column">
-      <Text bold>Configuration</Text>
+      <Text color='whiteBright' bold>Configuration</Text>
       <Box 
         height={settingItems.length > height ? height : undefined} 
         borderStyle='single'

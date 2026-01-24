@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Box, render, Text, useApp, useInput } from 'ink';
+import { Box, render, Text } from 'ink';
 import { SelectModel } from '../components/selectModel.tsx';
 import { Model } from '../types/model.ts';
+import { Provider } from '../types/provider.ts';
 
 export function selectModel() {
   render(<Select/>);
@@ -9,35 +10,27 @@ export function selectModel() {
 
 function Select() {
 
-  const { exit } = useApp();
-
-  const [view, setView] = useState<'select-model' | 'selected-model' | 'none'>('select-model');
+  const [provider, setProvider] = useState<Provider>();
   const [model, setModel] = useState<Model>();
 
-  useInput((_, key) => {
-    if (key.escape) {
-      setView('none');
-    }
-  });
-
   useEffect(() => {
-    if (view === 'none' || view === 'selected-model') {
-      exit();
+    if (model) {
+      setTimeout(() => process.exit(), 0);
     }
-  }, [view]);
+  }, [model]);
 
-  function handleSelect(model: Model) {
+  function handleSelect(provider: Provider, model: Model) {
+    setProvider(provider);
     setModel(model);
-    setView('selected-model');
   }
 
   return (
     <Box flexDirection='column'>
-      {view === 'select-model' &&
+      {!model &&
         <SelectModel onSelect={handleSelect}/>
       }
-      {view === 'selected-model' &&
-        <Text>Selected model: <Text bold color='cyanBright'>{model!.title}</Text></Text>
+      {model &&
+        <Text>Selected model: <Text bold color='cyanBright'>({provider?.name}) {model?.name}</Text></Text>
       }
     </Box>
   );

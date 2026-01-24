@@ -8,11 +8,12 @@ import { clearHistory } from './commands/clearHistory.ts';
 import { providers } from './commands/providers.tsx';
 import { logo } from './utils/logo.ts';
 import { config } from './commands/config.tsx';
+import { connect } from './commands/connect.tsx';
 
 void yargs(hideBin(process.argv))
   .scriptName('ask')
-  .usage(`${logo}\nAI CLI to help you with commands, coding, apps and more.\n\nVersion: 1.1.0\n\nUsage: $0 <prompt..>`)
-  .version('1.1.0')
+  .usage(`${logo}\nAI CLI to help you with commands, coding, apps and more.\n\nVersion: 1.2.0\n\nUsage: $0 <prompt..>`)
+  .version('1.2.0')
   .locale('en')
   .example('$0 how to run a docker container', '')
   .example('how to setup my git account', '')
@@ -46,6 +47,11 @@ void yargs(hideBin(process.argv))
     command: '/config',
     describe: 'Configuration',
     handler: () => config()
+  })
+  .command({
+    command: '/connect',
+    describe: 'Connect to an external provider using OpenAI-compatible API',
+    handler: () => connect()
   })
   .command({
     command: '/history',

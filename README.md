@@ -21,6 +21,7 @@ Forget about switching between applications to know how to use a command or fix 
 - [Usage](#usage)
 - [Select model](#select-model)
 - [Supported models](#supported-models)
+- [Connect to local or external providers](#connect-to-local-or-external-providers)
 - [Reference](#reference)
 
 ## Why use Ask CLI?
@@ -118,12 +119,18 @@ You can select a model using the **`ask /models`** command. This will list all t
 - Claude Sonnet 4.5
 - Claude Opus 4.5
 
+## Connect to local or external providers
+
+You can use the **`ask /connect`** command to connect to local models or external providers, using an **OpenAI-compatible API**, like llama.cpp, Ollama, Hugging Face, etc.
+
+![Connect screen](https://github.com/david-minaya/ask/blob/main/images/connect.png)
+
 ## Reference
 
 ```
 AI CLI to help you with commands, coding, apps and more.
 
-Version: 1.1.0
+Version: 1.2.0
 
 Usage: ask <prompt..>
 
@@ -132,6 +139,7 @@ Commands:
   ask /models        Select a model
   ask /providers     Setup providers
   ask /config        Configuration
+  ask /connect       Connect to an external provider using OpenAI-compatible API
   ask /history       List the chat history
   ask /clear         Clear the chat history
 

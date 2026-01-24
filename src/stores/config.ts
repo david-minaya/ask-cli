@@ -1,4 +1,5 @@
 import { Config } from '../types/config.ts';
+import { Provider } from '../types/provider.ts';
 import { defaultConfig } from '../utils/defaultConfig.ts';
 import { configPath } from '../utils/paths.ts';
 import { Store } from './store.ts';
@@ -18,20 +19,59 @@ class ConfigStore {
     return this.config;
   }
 
-  async setModel(provider: string, model: string) {
+  async addProvider(name: string, url: string, key: string, models: string[]) {
+    
     const config = await this.get();
-    config.model = { provider, model };
+    const time = Math.round(Date.now() / 1000);
+    const id = `${name.toLowerCase().replaceAll(' ', '-')}-${time}`;
+    
+    config.providers[id] = {
+      id,
+      type: 'openai-compatible',
+      key,
+      name,
+      url,
+      models: models.map(model => ({
+        id: model,
+        name: model
+      }))
+    };
+
     await this.save(config);
   }
 
-  async setProviderApiKey(providerId: string, apiKey: string) {
+  async updateProvider(id: string, provider: Partial<Provider>) {
     const config = await this.get();
-    config.providers[providerId].apiKey = apiKey;
+    config.providers[id] = { ...config.providers[id], ...provider };
+    await this.save(config);
+  }
+
+  async deleteProvider(id: string) {
+
+    const config = await this.get();
+    
+    delete config.providers[id];
+
+    if (config.model?.providerId === id) {
+      config.model = undefined;
+    }
+
+    await this.save(config);
+  }
+
+  async setModel(providerId: string, modelId: string) {
+    const config = await this.get();
+    config.model = { providerId, id: modelId };
+    await this.save(config);
+  }
+
+  async setProviderApiKey(providerId: string, key: string) {
+    const config = await this.get();
+    config.providers[providerId].key = key;
     await this.save(config);
   }
 
   async save(config: Config) {
-    this.config = config;
     await this.store.save(config);
   }
 }
