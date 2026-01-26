@@ -12,8 +12,8 @@ import { connect } from './commands/connect.tsx';
 
 void yargs(hideBin(process.argv))
   .scriptName('ask')
-  .usage(`${logo}\nAI CLI to help you with commands, coding, apps and more.\n\nVersion: 1.2.0\n\nUsage: $0 <prompt..>`)
-  .version('1.2.0')
+  .usage(`${logo}\nAI CLI to help you with commands, coding, apps and more.\n\nVersion: 1.2.1\n\nUsage: $0 <prompt..>`)
+  .version('1.2.1')
   .locale('en')
   .example('$0 how to run a docker container', '')
   .example('how to setup my git account', '')

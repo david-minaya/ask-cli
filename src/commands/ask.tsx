@@ -184,7 +184,8 @@ function Ask(props: Props) {
   async function runCommand(command: string) {    
     try {
       const [processInfo] = await findProcess.default('pid', process.ppid);
-      const result = await exec(command, { shell: processInfo.name });
+      const name = processInfo.name.replace(/^-/, '');
+      const result = await exec(command, { shell: name });
       return result.stdout;
     } catch (err) {
       const { stdout, stderr } = err as { stdout: string; stderr: string };
