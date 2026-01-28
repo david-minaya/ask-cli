@@ -4,7 +4,6 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "outDir": "./dist",
-    "inlineSourceMap": true,
     "rewriteRelativeImportExtensions": true
   }
 }

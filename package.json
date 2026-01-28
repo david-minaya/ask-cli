@@ -1,7 +1,7 @@
 {
   "name": "ask-cli-ai",
   "description": "AI CLI to help you with commands, coding, apps, and more from your terminal.",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "license": "ISC",
   "author": "David Minaya",
   "type": "module",
@@ -33,7 +33,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --incremental && node --enable-source-maps .",
+    "dev": "tsc --incremental --inlineSourceMap && node --enable-source-maps .",
     "lint": "eslint .",
     "typelint": "npm run lint && tsc --noEmit",
     "postinstall": "node ./dist/install.js"
