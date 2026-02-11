@@ -23,6 +23,7 @@ Forget about switching between applications to know how to use a command or fix 
 - [Supported models](#supported-models)
 - [Connect to local or external providers](#connect-to-local-or-external-providers)
 - [Reference](#reference)
+- [Integrations](#integrations)
 
 ## Why use Ask CLI?
 
@@ -130,7 +131,7 @@ You can use the **`ask /connect`** command to connect to local models or externa
 ```
 AI CLI to help you with commands, coding, apps and more.
 
-Version: 1.2.2
+Version: 1.2.3
 
 Usage: ask <prompt..>
 
@@ -157,3 +158,8 @@ Examples:
   what is the chmod command
   ask what is using port 80 -c "netstat -ano"
 ```
+
+## Integrations
+
+- [Ask CLI Search](https://www.askcli.ai): Single-result web search engine
+
