@@ -1,7 +1,7 @@
 {
   "name": "ask-cli-ai",
-  "description": "AI CLI to help you with commands, coding, apps, and more from your terminal.",
-  "version": "1.2.3",
+  "description": "A simple, fast, and secure way to run AI from the terminal",
+  "version": "1.2.4",
   "license": "ISC",
   "author": "David Minaya",
   "type": "module",

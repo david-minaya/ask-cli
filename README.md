@@ -2,8 +2,7 @@
 
 [![NPM Version](https://img.shields.io/npm/v/ask-cli-ai)](https://www.npmjs.com/package/ask-cli-ai) ![Min Node Version](https://img.shields.io/node/v/ask-cli-ai)
 
-
-A fast and lightweight AI-powered CLI tool to help you with commands, coding, apps and more.
+A simple, fast, and secure tool to run AI from the terminal.
 
 - 🤖  Get help about commands, coding, apps, etc.
 - 📝  Short and precise answers, just the info you need, straight to the point.
@@ -131,7 +130,7 @@ You can use the **`ask /connect`** command to connect to local models or externa
 ```
 AI CLI to help you with commands, coding, apps and more.
 
-Version: 1.2.3
+Version: 1.2.4
 
 Usage: ask <prompt..>
 
