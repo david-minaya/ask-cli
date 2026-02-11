@@ -6,13 +6,13 @@
   "author": "David Minaya",
   "type": "module",
   "main": "./dist/app.js",
-  "homepage": "https://github.com/david-minaya/ask",
+  "homepage": "https://www.askcli.ai",
   "engines": {
     "node": ">=22"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/david-minaya/ask.git"
+    "url": "git+https://github.com/david-minaya/ask-cli.git"
   },
   "keywords": [
     "cli",
